@@ -1,0 +1,3 @@
+[submodule "B2VideoUploader/ffmpeg_binaries"]
+	path = B2VideoUploader/ffmpeg_binaries
+	url = https://github.com/Rrego6/FFMPEG_BINARY_5.1.git
