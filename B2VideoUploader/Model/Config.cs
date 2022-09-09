@@ -16,14 +16,13 @@ namespace B2VideoUploader.Model
         private static readonly string upload_part_size = "B2UploadConfiguration:upload_part_size";
         private static readonly string request_timeout_time = "B2UploadConfiguration:request_timeout_time";
 
-
-
         public readonly string BucketId;
         public readonly string ApplicationId;
         public readonly string ApplicationKey;
         public readonly long MinLargeUploadSize;
         public readonly long UploadPartSize;
         public readonly int RequestTimeoutTime;
+        public readonly string FFMpegBinariesLocation;
 
         public Config(IConfiguration config)
         {
@@ -33,6 +32,7 @@ namespace B2VideoUploader.Model
             MinLargeUploadSize = config.GetValue<long>(min_large_upload_size_key) * 1000 * 1000; //convert from MB to B
             UploadPartSize = config.GetValue<long>(upload_part_size) * 1000 * 1000; //convert from MB to B
             RequestTimeoutTime = config.GetValue<int>(request_timeout_time);
+            FFMpegBinariesLocation = config.GetValue<string>(FFMpegBinariesLocation);
         }
     }
 }

@@ -10,11 +10,10 @@ namespace B2VideoUploader
 
     /**
      * Todo: todo
-     * add ffmpeg support
-     * add automatic json upload support
+     * Fix builds
+     * Fix retry mechanism
+     * Only Reupload unuploaded parts
      * clean up half uploads
-     * Remove secrets from code
-     * upload to github
      * 
      */
     internal class Program
