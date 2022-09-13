@@ -1,8 +1,11 @@
 using B2VideoUploader.Helper;
+using B2VideoUploader.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Polly;
+using Polly.Extensions.Http;
 using System.ComponentModel.Design;
 
 namespace B2VideoUploader
@@ -31,7 +34,7 @@ namespace B2VideoUploader
             ILogger<Program> logger = loggerFactory.CreateLogger<Program>();
 
             ServiceProvider = host.Services;
-            Application.Run(ServiceProvider.GetRequiredService<Form1>());
+            Application.Run(ServiceProvider.GetRequiredService<MainForm>());
         }
 
         public static IServiceProvider ServiceProvider { get; private set; }
@@ -46,12 +49,13 @@ namespace B2VideoUploader
             });
             return builder.ConfigureServices((context, services) =>
                 {
+                    services.AddHttpClient();
+                    services.AddSingleton<Config>();
                     services.AddSingleton<CustomLogger>();
-                    services.AddSingleton<HttpClient>();
                     services.AddSingleton<BlackBlazeB2Api>();
                     services.AddSingleton<BlackBlazeUploadService>();
                     services.AddSingleton<FfmpegVideoConversionService>();
-                    services.AddTransient<Form1>();
+                    services.AddTransient<MainForm>();
                 })
                 .ConfigureLogging(builder =>
                 {
@@ -61,6 +65,15 @@ namespace B2VideoUploader
 
                 });                ;
 
+        }
+
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
+                                                                            retryAttempt)));
         }
 
     }

@@ -21,7 +21,6 @@ namespace B2VideoUploader.Helper
 {
     public class FfmpegVideoConversionService
     {
-        private readonly string defaultFFmpegRelativeBinDir = "./extern_bin/ffmpeg-5.1-essentials_build/bin/";
         private readonly CustomLogger customLogger;
         private readonly Config config;
         private static readonly Regex ProgressRegex = new Regex("time=(\\d\\d:\\d\\d:\\d\\d.\\d\\d?)", RegexOptions.Compiled);
@@ -30,9 +29,10 @@ namespace B2VideoUploader.Helper
 
         public FfmpegVideoConversionService(CustomLogger customLogger, Config config)
         {
-            GlobalFFOptions.Configure(new FFOptions { BinaryFolder = getFFMPegPath(), TemporaryFilesFolder = getTempVideoStoragePath() });
             this.customLogger = customLogger;
             this.config = config;
+            GlobalFFOptions.Configure(new FFOptions { BinaryFolder = getFFMPegPath(), TemporaryFilesFolder = getTempVideoStoragePath() });
+
         }
 
 
@@ -46,8 +46,8 @@ namespace B2VideoUploader.Helper
         private string? getFFMPegPath()
         {
             var pathIfFFMpegInPath = Util.GetFullPath("ffmpeg.exe");
-            var fullPath = Path.GetFullPath(defaultFFmpegRelativeBinDir);
-            return pathIfFFMpegInPath ?? fullPath ?? throw new FileNotFoundException($"ffmpeg executable not found at: (${defaultFFmpegRelativeBinDir})");
+            var fullPath = Path.GetFullPath(config.FFMpegBinariesLocation);
+            return pathIfFFMpegInPath ?? fullPath ?? throw new FileNotFoundException($"ffmpeg executable not found at: (${config.FFMpegBinariesLocation})");
         }
 
 
@@ -135,7 +135,7 @@ namespace B2VideoUploader.Helper
                 }
                 File.Delete(infoFilePath);
                 return false;
-                }
+            }
             return false;
         }
 

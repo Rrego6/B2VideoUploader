@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2VideoUploader", "B2VideoUploader\B2VideoUploader.csproj", "{65FADD6B-C185-4F8A-98B9-B822751353C4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2VideoUploader", "B2VideoUploader\B2VideoUploader.csproj", "{65FADD6B-C185-4F8A-98B9-B822751353C4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "B2VideoExplorer.Tests", "B2VideoExplorer.Tests\B2VideoExplorer.Tests.csproj", "{DABEE184-D2D5-451E-A259-CF089524BA75}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2VideoExplorer.Tests", "B2VideoExplorer.Tests\B2VideoExplorer.Tests.csproj", "{DABEE184-D2D5-451E-A259-CF089524BA75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,7 +20,6 @@ Global
 		{DABEE184-D2D5-451E-A259-CF089524BA75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DABEE184-D2D5-451E-A259-CF089524BA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DABEE184-D2D5-451E-A259-CF089524BA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DABEE184-D2D5-451E-A259-CF089524BA75}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

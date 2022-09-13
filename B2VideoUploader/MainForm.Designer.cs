@@ -1,6 +1,6 @@
 ﻿namespace B2VideoUploader
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -28,11 +28,12 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripProgressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.connectionStatusStrip = new System.Windows.Forms.StatusStrip();
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+            this.button1 = new System.Windows.Forms.Button();
+            this.connection_status_string = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.listView1 = new System.Windows.Forms.ListView();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
@@ -51,9 +52,9 @@
             this.progressInfoHeader = new System.Windows.Forms.ColumnHeader();
             this.loggingPage = new System.Windows.Forms.TabPage();
             this.loggingListView = new System.Windows.Forms.ListView();
-            this.statusStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.flowLayoutPanel3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -65,41 +66,15 @@
             this.loggingPage.SuspendLayout();
             this.SuspendLayout();
             // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripProgressBar});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 623);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(1165, 24);
-            this.statusStrip1.TabIndex = 0;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripProgressBar
-            // 
-            this.toolStripProgressBar.Name = "toolStripProgressBar";
-            this.toolStripProgressBar.Size = new System.Drawing.Size(117, 18);
-            // 
-            // connectionStatusStrip
-            // 
-            this.connectionStatusStrip.Dock = System.Windows.Forms.DockStyle.Top;
-            this.connectionStatusStrip.Location = new System.Drawing.Point(0, 0);
-            this.connectionStatusStrip.Name = "connectionStatusStrip";
-            this.connectionStatusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 16, 0);
-            this.connectionStatusStrip.Size = new System.Drawing.Size(1165, 22);
-            this.connectionStatusStrip.TabIndex = 1;
-            this.connectionStatusStrip.Text = "statusStrip2";
-            // 
             // panel1
             // 
             this.panel1.Controls.Add(this.tableLayoutPanel1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(0, 22);
-            this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
             this.panel1.Padding = new System.Windows.Forms.Padding(23, 0, 23, 0);
-            this.panel1.Size = new System.Drawing.Size(1165, 601);
+            this.panel1.Size = new System.Drawing.Size(1172, 673);
             this.panel1.TabIndex = 2;
             // 
             // tableLayoutPanel1
@@ -107,24 +82,73 @@
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.tabControl1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.flowLayoutPanel3, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.splitContainer1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.tabControl1, 0, 2);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(23, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 77.37105F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 22.62895F));
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 8.103727F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 91.89627F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 186F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1119, 601);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1126, 673);
             this.tableLayoutPanel1.TabIndex = 3;
+            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
+            // 
+            // flowLayoutPanel3
+            // 
+            this.flowLayoutPanel3.Controls.Add(this.button1);
+            this.flowLayoutPanel3.Controls.Add(this.connection_status_string);
+            this.flowLayoutPanel3.Controls.Add(this.label1);
+            this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowLayoutPanel3.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
+            this.flowLayoutPanel3.Location = new System.Drawing.Point(3, 3);
+            this.flowLayoutPanel3.Name = "flowLayoutPanel3";
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(1120, 33);
+            this.flowLayoutPanel3.TabIndex = 3;
+            // 
+            // button1
+            // 
+            this.button1.AutoSize = true;
+            this.button1.Location = new System.Drawing.Point(975, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(142, 25);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "Edit Connection Status";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // connection_status_string
+            // 
+            this.connection_status_string.AutoSize = true;
+            this.connection_status_string.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.connection_status_string.Location = new System.Drawing.Point(931, 0);
+            this.connection_status_string.Name = "connection_status_string";
+            this.connection_status_string.Size = new System.Drawing.Size(38, 31);
+            this.connection_status_string.TabIndex = 5;
+            this.connection_status_string.Text = "label2";
+            this.connection_status_string.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Location = new System.Drawing.Point(818, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(107, 31);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Connection Status:";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // splitContainer1
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(4, 3);
+            this.splitContainer1.Location = new System.Drawing.Point(4, 42);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.splitContainer1.Name = "splitContainer1";
             // 
@@ -137,8 +161,8 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.flowLayoutPanel2);
             this.splitContainer1.Panel2.Controls.Add(this.completedListView);
-            this.splitContainer1.Size = new System.Drawing.Size(1111, 459);
-            this.splitContainer1.SplitterDistance = 546;
+            this.splitContainer1.Size = new System.Drawing.Size(1118, 441);
+            this.splitContainer1.SplitterDistance = 549;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 0;
             // 
@@ -151,10 +175,11 @@
             this.listView1.Location = new System.Drawing.Point(0, 0);
             this.listView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(546, 407);
+            this.listView1.Size = new System.Drawing.Size(549, 389);
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.List;
+            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged_1);
             this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyDown);
             // 
             // flowLayoutPanel1
@@ -162,10 +187,10 @@
             this.flowLayoutPanel1.Controls.Add(this.add_videos_btn);
             this.flowLayoutPanel1.Controls.Add(this.start_upload_btn);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 407);
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 389);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(546, 52);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(549, 52);
             this.flowLayoutPanel1.TabIndex = 2;
             // 
             // add_videos_btn
@@ -196,10 +221,10 @@
             this.flowLayoutPanel2.Controls.Add(this.clear_btn);
             this.flowLayoutPanel2.Controls.Add(this.clear_all_btn);
             this.flowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 407);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(0, 389);
             this.flowLayoutPanel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(560, 52);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(564, 52);
             this.flowLayoutPanel2.TabIndex = 3;
             // 
             // clear_btn
@@ -231,7 +256,7 @@
             this.completedListView.Location = new System.Drawing.Point(0, 0);
             this.completedListView.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.completedListView.Name = "completedListView";
-            this.completedListView.Size = new System.Drawing.Size(560, 459);
+            this.completedListView.Size = new System.Drawing.Size(564, 441);
             this.completedListView.TabIndex = 2;
             this.completedListView.UseCompatibleStateImageBehavior = false;
             this.completedListView.View = System.Windows.Forms.View.List;
@@ -242,10 +267,10 @@
             this.tabControl1.Controls.Add(this.inProgressStatusPage);
             this.tabControl1.Controls.Add(this.loggingPage);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(3, 468);
+            this.tabControl1.Location = new System.Drawing.Point(3, 489);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1113, 130);
+            this.tabControl1.Size = new System.Drawing.Size(1120, 181);
             this.tabControl1.TabIndex = 1;
             // 
             // inProgressStatusPage
@@ -254,7 +279,7 @@
             this.inProgressStatusPage.Location = new System.Drawing.Point(4, 24);
             this.inProgressStatusPage.Name = "inProgressStatusPage";
             this.inProgressStatusPage.Padding = new System.Windows.Forms.Padding(3);
-            this.inProgressStatusPage.Size = new System.Drawing.Size(1105, 102);
+            this.inProgressStatusPage.Size = new System.Drawing.Size(1112, 153);
             this.inProgressStatusPage.TabIndex = 0;
             this.inProgressStatusPage.Text = "In Progress";
             this.inProgressStatusPage.UseVisualStyleBackColor = true;
@@ -272,7 +297,7 @@
             this.inProgressListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.inProgressListView.Location = new System.Drawing.Point(3, 3);
             this.inProgressListView.Name = "inProgressListView";
-            this.inProgressListView.Size = new System.Drawing.Size(1099, 96);
+            this.inProgressListView.Size = new System.Drawing.Size(1106, 147);
             this.inProgressListView.TabIndex = 0;
             this.inProgressListView.UseCompatibleStateImageBehavior = false;
             this.inProgressListView.View = System.Windows.Forms.View.Details;
@@ -303,7 +328,7 @@
             this.loggingPage.Location = new System.Drawing.Point(4, 24);
             this.loggingPage.Name = "loggingPage";
             this.loggingPage.Padding = new System.Windows.Forms.Padding(3);
-            this.loggingPage.Size = new System.Drawing.Size(1105, 102);
+            this.loggingPage.Size = new System.Drawing.Size(1112, 153);
             this.loggingPage.TabIndex = 1;
             this.loggingPage.Text = "Log";
             this.loggingPage.UseVisualStyleBackColor = true;
@@ -313,27 +338,25 @@
             this.loggingListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.loggingListView.Location = new System.Drawing.Point(3, 3);
             this.loggingListView.Name = "loggingListView";
-            this.loggingListView.Size = new System.Drawing.Size(1099, 96);
+            this.loggingListView.Size = new System.Drawing.Size(1106, 147);
             this.loggingListView.TabIndex = 0;
             this.loggingListView.UseCompatibleStateImageBehavior = false;
             this.loggingListView.View = System.Windows.Forms.View.List;
             this.loggingListView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.loggingListView_KeyDown);
             // 
-            // Form1
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1165, 647);
+            this.ClientSize = new System.Drawing.Size(1172, 673);
             this.Controls.Add(this.panel1);
-            this.Controls.Add(this.connectionStatusStrip);
-            this.Controls.Add(this.statusStrip1);
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Form1";
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.flowLayoutPanel3.ResumeLayout(false);
+            this.flowLayoutPanel3.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -344,7 +367,6 @@
             this.inProgressStatusPage.ResumeLayout(false);
             this.loggingPage.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -353,7 +375,6 @@
 
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
-        private System.Windows.Forms.StatusStrip connectionStatusStrip;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
@@ -374,5 +395,22 @@
         private ColumnHeader uploadStatusHeader;
         private ColumnHeader progressInfoHeader;
         private ListView loggingListView;
+        private StatusStrip connectionStatusStrip;
+        private ToolStripStatusLabel toolStripStatusLabel1;
+        private ToolStripDropDownButton toolStripDropDownButton2;
+        private ToolStripMenuItem asdfToolStripMenuItem;
+        private ToolStripSplitButton toolStripSplitButton1;
+        private ToolStripMenuItem sdfToolStripMenuItem;
+        private ToolStripMenuItem sdfdsfasToolStripMenuItem;
+        private ToolStripMenuItem asdfToolStripMenuItem1;
+        private ToolStripDropDownButton toolStripDropDownButton1;
+        private ToolStripMenuItem aaaToolStripMenuItem;
+        private ToolStripMenuItem aasToolStripMenuItem;
+        private ToolStripMenuItem sdfasdfToolStripMenuItem;
+        private ToolStripMenuItem asdToolStripMenuItem;
+        private FlowLayoutPanel flowLayoutPanel3;
+        private Label label1;
+        private Button button1;
+        private Label connection_status_string;
     }
 }

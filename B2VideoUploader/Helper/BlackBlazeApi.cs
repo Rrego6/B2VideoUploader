@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Polly;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,20 @@ namespace B2VideoUploader.Helper
         public static readonly string apiUrl_prop = "apiUrl";
         public static readonly string authorizationToken_prop = "apiUrl";
 
+        HttpStatusCode[] httpStatusCodesWorthRetrying = {
+           HttpStatusCode.RequestTimeout, // 408
+           HttpStatusCode.InternalServerError, // 500
+           HttpStatusCode.BadGateway, // 502
+           HttpStatusCode.ServiceUnavailable, // 503
+           HttpStatusCode.GatewayTimeout // 504
+        };
 
         private static readonly string LoginApiUrl = "https://api.backblazeb2.com/b2api/v2/b2_authorize_account";
 
         public BlackBlazeB2Api(HttpClient httpClient, CustomLogger logger, Config config)
         {
             this.httpClient = httpClient;
+
             httpClient.Timeout = TimeSpan.FromSeconds(config.RequestTimeoutTime);
             this.logger = logger;
         }

@@ -13,8 +13,9 @@ namespace B2VideoUploader.Model
         private static readonly string application_id_key = "secret:application_id";
         private static readonly string application_key_key = "secret:application_key";
         private static readonly string min_large_upload_size_key = "B2UploadConfiguration:min_large_upload_size";
-        private static readonly string upload_part_size = "B2UploadConfiguration:upload_part_size";
-        private static readonly string request_timeout_time = "B2UploadConfiguration:request_timeout_time";
+        private static readonly string upload_part_size_key = "B2UploadConfiguration:upload_part_size";
+        private static readonly string request_timeout_time_key = "B2UploadConfiguration:request_timeout_time";
+        private static readonly string ffmpeg_binary_location_key = "B2UploadConfiguration:ffmpeg_binary_location";
 
         public readonly string BucketId;
         public readonly string ApplicationId;
@@ -30,9 +31,9 @@ namespace B2VideoUploader.Model
             ApplicationId = config.GetValue<string>(application_id_key);
             ApplicationKey = config.GetValue<string>(application_key_key);
             MinLargeUploadSize = config.GetValue<long>(min_large_upload_size_key) * 1000 * 1000; //convert from MB to B
-            UploadPartSize = config.GetValue<long>(upload_part_size) * 1000 * 1000; //convert from MB to B
-            RequestTimeoutTime = config.GetValue<int>(request_timeout_time);
-            FFMpegBinariesLocation = config.GetValue<string>(FFMpegBinariesLocation);
+            UploadPartSize = config.GetValue<long>(upload_part_size_key) * 1000 * 1000; //convert from MB to B
+            RequestTimeoutTime = config.GetValue<int>(request_timeout_time_key);
+            FFMpegBinariesLocation = config.GetValue<string>(ffmpeg_binary_location_key);
         }
     }
 }

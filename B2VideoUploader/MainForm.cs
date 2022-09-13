@@ -26,14 +26,14 @@ using ListView = System.Windows.Forms.ListView;
 
 namespace B2VideoUploader
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         private readonly BlackBlazeUploadService b2UploadService;
         private readonly CustomLogger logger;
         private FfmpegVideoConversionService ffmpegVideoConversionService;
         IEnumerable<ProgressListViewItem> progressListViewItems = new List<ProgressListViewItem>();
 
-        public Form1(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger)
+        public MainForm(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger, Config config)
         {
             this.b2UploadService = b2UploadService;
             this.logger = logger;
@@ -98,18 +98,25 @@ namespace B2VideoUploader
 
         private async void handleUploadTasks(List<VideoUploadInformationContainer> uploadInfos)
         {
+            Task[] tasks = new Task[uploadInfos.Count()];
+            int taskCount = 0;
             foreach(VideoUploadInformationContainer uploadInfo in uploadInfos )
             {
                 try
                 {
-                    await handleVideoTask(uploadInfo.FilePath, uploadInfo.InProgressListViewItem, uploadInfo.CompletedListView);
+                    tasks[taskCount++] = handleVideoTask(uploadInfo.FilePath, uploadInfo.InProgressListViewItem, uploadInfo.CompletedListView);
                 } catch(Exception e)
                 {
                     logger.LogError(e.ToString());
                     throw;
                 }
             }
+            foreach(Task task in tasks)
+            {
+                await task;
+            }
         }
+
 
         private async Task handleVideoTask(string filePath, ListViewItem inProgressListViewItem, ListView completedListView)
         {
@@ -120,8 +127,11 @@ namespace B2VideoUploader
                 {
                     string statusMessage = $"{percentageUpdate}% encoded";
                     logger.LogInformation(statusMessage);
-                    inProgressListViewItem.SubItems[3] = new ListViewSubItem(inProgressListViewItem, statusMessage);
-                    inProgressListView.Invoke(inProgressListView.Update);
+                    inProgressListView.Invoke(() =>
+                    {
+                        inProgressListViewItem.SubItems[3] = new ListViewSubItem(inProgressListViewItem, statusMessage);
+                        inProgressListView.Invoke(inProgressListView.Update);
+                    });
                 }
                 );
             var subtitleFilePath = await ffmpegVideoConversionService.extractSubtitles(filePath);
@@ -221,6 +231,35 @@ namespace B2VideoUploader
 
         }
 
+        private void connectionStatusStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void listView1_SelectedIndexChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+
+        }
 
         private void listView1_KeyDown(object sender, KeyEventArgs e)
         {

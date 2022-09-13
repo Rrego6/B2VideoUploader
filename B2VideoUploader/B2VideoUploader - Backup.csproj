@@ -25,13 +25,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="MainForm.cs">
+    <Compile Update="Form1.cs">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Compile>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -42,7 +37,7 @@
 	
 	<ItemGroup>
     <None Update="App.config">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -51,7 +46,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Update="settings.ini" CopyToPublishDirectory="Never" CopyToOutputDirectory="PreserveNewest"/>
+    <None Update="settings.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="settings.sample.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -62,12 +59,14 @@
 		</None>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <EmbeddedResource Update="Properties\Resources.resx">
-	    <Generator>ResXFileCodeGenerator</Generator>
-	    <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
-	</ItemGroup>
 
+	<ItemGroup>
+  <Folder Include="Service\" />
+</ItemGroup>
+
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="; Move all assemblies and related files to lib folder&#xD;&#xA;ROBOCOPY &quot;$(TargetDir) &quot; &quot;$(TargetDir)lib\ &quot; /XF *.exe *.config settings.ini settings.sample.ini *.manifest appsettings.json  /XD lib logs data runtimes ffmpeg_binaries /E /IS /MOVE&#xD;&#xA;if %25errorlevel%25 leq 4 exit 0 else exit %25errorlevel%25" />
+	</Target>
 
 </Project>
