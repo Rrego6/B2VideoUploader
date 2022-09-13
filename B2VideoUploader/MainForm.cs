@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,25 +30,61 @@ namespace B2VideoUploader
     {
         private readonly BlackBlazeUploadService b2UploadService;
         private readonly CustomLogger logger;
+        private readonly ConnectionSettingsValidator connectionSettingsValidator;
         private FfmpegVideoConversionService ffmpegVideoConversionService;
-        IEnumerable<ProgressListViewItem> progressListViewItems = new List<ProgressListViewItem>();
 
-        public MainForm(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger, Config config)
+        public MainForm(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger, Config config, ConnectionSettingsValidator connectionSettingsValidator)
         {
             this.b2UploadService = b2UploadService;
             this.logger = logger;
+            this.connectionSettingsValidator = connectionSettingsValidator;
             this.ffmpegVideoConversionService = ffmpegVideoConversionService;
-            InitApplication();
             InitializeComponent();
+            InitApplication();
+            this.Text = "B2VideoUploader";
         }
 
-        private void InitApplication()
+
+        private void OnConnectionStatusUpdated(bool isValid, string errMsg)
+        {
+            this.Invoke(() =>
+            {
+                if (isValid)
+                {
+                    this.connection_status_string.Text = "Connected ✅";
+                    this.connection_status_string.ForeColor = Color.Green;
+                    this.add_videos_btn.Enabled = true;
+                    this.start_upload_btn.Enabled = true;
+                }
+                else
+                {
+                    this.connection_status_string.ForeColor = Color.Red;
+                    this.connection_status_string.Text = "Failed To Connect ❌";
+                    this.add_videos_btn.Enabled = false;
+                    this.start_upload_btn.Enabled = false;
+                }
+            });
+        }
+
+        private async void InitApplication()
         {
             logger.addLoggingSubscriber(
                 (logMessage) => {
                     loggingListView.Invoke(() => { loggingListView.Items.Add(logMessage); });
                     }
                 );
+            (bool isLoginValid, string errLoginString) = await connectionSettingsValidator.ValidateLoginConfiguration(this.OnConnectionStatusUpdated);
+            if(isLoginValid)
+            {
+                this.connection_status_string.Text = "Connected ✅";
+            } else
+            {
+                this.connection_status_string.Text = "Failed To Connect ❌";
+            }
+
+            (bool isBucketValid, string errBucket) = await connectionSettingsValidator.ValidateBucketConfiguration();
+
+
         }
 
         private void btnAddVideosClick(object sender, EventArgs e)
@@ -256,7 +292,12 @@ namespace B2VideoUploader
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void edit_connection_status_btn_click(object sender, EventArgs e)
+        {
+            connectionSettingsValidator.EditConnectionSettingsPrompt(OnConnectionStatusUpdated);
+        }
+
+        private void connection_status_string_Click(object sender, EventArgs e)
         {
 
         }

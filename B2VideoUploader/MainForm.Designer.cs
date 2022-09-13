@@ -31,7 +31,7 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
-            this.button1 = new System.Windows.Forms.Button();
+            this.edit_connection_status_btn = new System.Windows.Forms.Button();
             this.connection_status_string = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
@@ -101,7 +101,7 @@
             // 
             // flowLayoutPanel3
             // 
-            this.flowLayoutPanel3.Controls.Add(this.button1);
+            this.flowLayoutPanel3.Controls.Add(this.edit_connection_status_btn);
             this.flowLayoutPanel3.Controls.Add(this.connection_status_string);
             this.flowLayoutPanel3.Controls.Add(this.label1);
             this.flowLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -111,16 +111,16 @@
             this.flowLayoutPanel3.Size = new System.Drawing.Size(1120, 33);
             this.flowLayoutPanel3.TabIndex = 3;
             // 
-            // button1
+            // edit_connection_status_btn
             // 
-            this.button1.AutoSize = true;
-            this.button1.Location = new System.Drawing.Point(975, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(142, 25);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "Edit Connection Status";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.edit_connection_status_btn.AutoSize = true;
+            this.edit_connection_status_btn.Location = new System.Drawing.Point(975, 3);
+            this.edit_connection_status_btn.Name = "edit_connection_status_btn";
+            this.edit_connection_status_btn.Size = new System.Drawing.Size(142, 25);
+            this.edit_connection_status_btn.TabIndex = 3;
+            this.edit_connection_status_btn.Text = "Edit Connection Status";
+            this.edit_connection_status_btn.UseVisualStyleBackColor = true;
+            this.edit_connection_status_btn.Click += new System.EventHandler(this.edit_connection_status_btn_click);
             // 
             // connection_status_string
             // 
@@ -132,6 +132,7 @@
             this.connection_status_string.TabIndex = 5;
             this.connection_status_string.Text = "label2";
             this.connection_status_string.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.connection_status_string.Click += new System.EventHandler(this.connection_status_string_Click);
             // 
             // label1
             // 
@@ -373,8 +374,6 @@
         #endregion
 
 
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripProgressBar toolStripProgressBar;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
@@ -395,22 +394,10 @@
         private ColumnHeader uploadStatusHeader;
         private ColumnHeader progressInfoHeader;
         private ListView loggingListView;
-        private StatusStrip connectionStatusStrip;
-        private ToolStripStatusLabel toolStripStatusLabel1;
-        private ToolStripDropDownButton toolStripDropDownButton2;
-        private ToolStripMenuItem asdfToolStripMenuItem;
-        private ToolStripSplitButton toolStripSplitButton1;
-        private ToolStripMenuItem sdfToolStripMenuItem;
-        private ToolStripMenuItem sdfdsfasToolStripMenuItem;
-        private ToolStripMenuItem asdfToolStripMenuItem1;
-        private ToolStripDropDownButton toolStripDropDownButton1;
-        private ToolStripMenuItem aaaToolStripMenuItem;
-        private ToolStripMenuItem aasToolStripMenuItem;
-        private ToolStripMenuItem sdfasdfToolStripMenuItem;
-        private ToolStripMenuItem asdToolStripMenuItem;
         private FlowLayoutPanel flowLayoutPanel3;
         private Label label1;
         private Button button1;
         private Label connection_status_string;
+        private Button edit_connection_status_btn;
     }
 }

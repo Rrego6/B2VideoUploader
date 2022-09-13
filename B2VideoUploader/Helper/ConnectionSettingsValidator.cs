@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace B2VideoUploader.Helper
 
         public static string SecretsConfigurationLocation = "settings.ini";
 
+        public delegate void OnConnectionStatusUpdated(bool isValid, string errMsg);
+
         public ConnectionSettingsValidator(Config config, BlackBlazeB2Api b2api, CredentialConfigForm editConnectionSettingsForm)
         {
             this.config = config;
@@ -25,28 +28,44 @@ namespace B2VideoUploader.Helper
         }
 
 
-        public async Task<(bool, string)> ValidateLoginConfiguration()
+        public async Task<(bool, string)> ValidateLoginConfiguration(OnConnectionStatusUpdated? connectionStatusUpdated = null)
         {
             var loginResponse = await b2Api.blackBlazeLogin(config.ApplicationId, config.ApplicationKey);
             var status = (string)(loginResponse["status"] ?? string.Empty);
             if (status.StartsWith("4") || status.StartsWith("5"))
             {
+                if (connectionStatusUpdated != null)
+                {
+                    connectionStatusUpdated(false, (string)(loginResponse["message"] ?? string.Empty));
+                }
                 return (false, (string)(loginResponse["message"] ?? string.Empty));
+            }
+            if (connectionStatusUpdated != null)
+            {
+                connectionStatusUpdated(true, String.Empty);
             }
             return (true, String.Empty);
         }
 
-        public async Task<bool> ValidateBucketConfiguration()
+        public async Task<(bool, string)> ValidateBucketConfiguration()
         {
-            return true;
+            return (true, String.Empty);
         }
+
+
 
         /**
          * returns true if connecion settings are changed
          */
-        public void EditConnectionSettingsPrompt() {
-            editConnectionSettingsForm.ShowDialog();
-            editConnectionSettingsForm.Activate();
+        public void EditConnectionSettingsPrompt(OnConnectionStatusUpdated? connectionStatusUpdated = null) {
+
+            editConnectionSettingsForm.ShowEditCredentialsForm(config.ApplicationId, config.ApplicationKey, config.BucketId, HandleSaveCredentials);
+            ValidateLoginConfiguration(connectionStatusUpdated);
+        }
+
+        public void HandleSaveCredentials(string applicationId, string applicationKey, string bucketId)
+        {
+            config.OverWriteSecrets(applicationId, applicationKey, bucketId);
         }
 
 

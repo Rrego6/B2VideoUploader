@@ -12,8 +12,7 @@ namespace B2VideoUploader
 {
 
     /**
-     * Todo: todo
-     * Fix builds
+     * Todo:
      * Fix retry mechanism
      * Only Reupload unuploaded parts
      * clean up half uploads
@@ -32,7 +31,7 @@ namespace B2VideoUploader
             var host = CreateHostBuilder().Build();
             ILoggerFactory loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
             ILogger<Program> logger = loggerFactory.CreateLogger<Program>();
-
+             
             ServiceProvider = host.Services;
             Application.Run(ServiceProvider.GetRequiredService<MainForm>());
         }
@@ -45,13 +44,16 @@ namespace B2VideoUploader
             builder.ConfigureAppConfiguration((hostingContext, configuration) =>
             {
                 //read in password secrets
-                configuration.AddIniFile("settings.ini");
+                configuration.AddIniFile("settings.ini", true);
             });
             return builder.ConfigureServices((context, services) =>
                 {
                     services.AddHttpClient();
                     services.AddSingleton<Config>();
                     services.AddSingleton<CustomLogger>();
+                    services.AddSingleton<CredentialConfigForm>();
+                    services.AddSingleton<ConnectionSettingsValidator>();
+                    services.AddSingleton<FfmpegVideoConversionService>();
                     services.AddSingleton<BlackBlazeB2Api>();
                     services.AddSingleton<BlackBlazeUploadService>();
                     services.AddSingleton<FfmpegVideoConversionService>();
@@ -63,7 +65,7 @@ namespace B2VideoUploader
                     builder.AddConsole();
                     builder.AddDebug();
 
-                });                ;
+                });
 
         }
 
@@ -72,8 +74,7 @@ namespace B2VideoUploader
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2,
-                                                                            retryAttempt)));
+                .WaitAndRetryAsync(6, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
     }
