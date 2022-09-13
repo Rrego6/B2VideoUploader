@@ -15,9 +15,8 @@ Tool to upload videos to BlackBlaze B2 for consumption by Cytube after convertin
 
 ### TODO
 
-Fix Builds
-Fix Retry Mechanism
-Clean up code
-Only Reupload unploaded parts
-clean up half uploads
-Write tests
+- Fix Retry Mechanism
+- Clean up code
+- Only Reupload unploaded parts
+- clean up half uploads
+- Write tests
