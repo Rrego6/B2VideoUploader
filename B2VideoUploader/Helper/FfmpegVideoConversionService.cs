@@ -250,6 +250,7 @@ namespace B2VideoUploader.Helper
                 .CancellableThrough(out var cancel)
                 .ProcessAsynchronously();
 
+            await task;
             await WriteSha1File(outputPath);
             return (outputPath, container);
         }
