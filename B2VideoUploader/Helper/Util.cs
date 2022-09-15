@@ -93,6 +93,21 @@ namespace B2VideoUploader.Helper
             return sb.ToString();
         }
 
+        public static string calcSha1(string filePath)
+        {
+            SHA1 sha1 = SHA1.Create();
+            var fileStream = File.OpenRead(filePath);
+            byte[] hashData = sha1.ComputeHash(fileStream);
+            fileStream.Close();
+            StringBuilder sb = new StringBuilder();
+            foreach (byte b in hashData)
+            {
+                sb.Append(b.ToString("x2"));
+            }
+            return sb.ToString();
+        }
+
+
         public static string GetFullPath(string fileName)
         {
             if (File.Exists(fileName))

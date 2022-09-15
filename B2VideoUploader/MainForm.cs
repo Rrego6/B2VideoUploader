@@ -1,27 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Net.Mime;
-using System.Runtime.Intrinsics.Arm;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using B2VideoUploader.Helper;
+﻿using B2VideoUploader.Helper;
 using B2VideoUploader.Model;
-using B2VideoUploader.Properties;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using static System.Windows.Forms.ListViewItem;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using ListView = System.Windows.Forms.ListView;
 
 namespace B2VideoUploader
@@ -153,7 +133,7 @@ namespace B2VideoUploader
             }
         }
 
-
+        //todo: Move to VideoUploadService
         private async Task handleVideoTask(string filePath, ListViewItem inProgressListViewItem, ListView completedListView)
         {
             inProgressListViewItem.SubItems[1] = new ListViewSubItem(inProgressListViewItem, "Started");

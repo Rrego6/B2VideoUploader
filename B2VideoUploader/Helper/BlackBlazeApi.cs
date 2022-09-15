@@ -53,7 +53,7 @@ namespace B2VideoUploader.Helper
             return JObject.Parse(responseString);
         }
 
-        public async Task<JObject> b2StartLargeFile(string apiUrl, string authorizationToken, string bucketId, string fileName, string contentType)
+        public async Task<JObject> b2StartLargeFile(string apiUrl, string authorizationToken, string bucketId, string fileName, string contentType, string wholeSha1)
         {
             var endpoint = apiUrl + "/b2api/v2/b2_start_large_file";
 
@@ -62,7 +62,11 @@ namespace B2VideoUploader.Helper
             {
                 fileName = fileName,
                 bucketId = bucketId,
-                contentType = contentType
+                contentType = contentType,
+                fileInfo = new
+                {
+                    large_file_sha1 = wholeSha1
+                }
             };
 
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, endpoint);
@@ -217,6 +221,35 @@ namespace B2VideoUploader.Helper
             return JObject.Parse(responseString);
         }
 
+        public async Task<JObject> b2ListUnFinishedLargeFiles(string apiUrl, string authorizationToken, string bucketId, string fileName)
+        {
+            throw new NotImplementedException();
+        }
 
+        public async Task<JObject> b2ListParts(string apiUrl, string authorizationToken, string bucketId, string unfinishedLargeFileId, long numParts)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<JObject> b2ListFileVersions(string apiUrl, string authorizationToken, string bucketId, string fileName)
+        {
+            var endpoint = apiUrl + "/b2api/v2/b2_list_file_versions";
+
+            var data = new Dictionary<string, string>()
+            {
+                { "bucketId", bucketId },
+                { "startFileName", fileName }
+            };
+
+            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, endpoint);
+            requestMessage.Headers.TryAddWithoutValidation("Authorization", authorizationToken);
+            requestMessage.Content = new StringContent(JsonConvert.SerializeObject(data, Formatting.None));
+            HttpResponseMessage responseMessage = await httpClient.SendAsync(requestMessage);
+            var responseString = await responseMessage.Content.ReadAsStringAsync();
+
+            logger.LogTrace(responseString);
+
+            return JObject.Parse(responseString);
+        }
     }
 }

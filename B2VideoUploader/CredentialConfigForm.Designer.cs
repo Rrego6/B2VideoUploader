@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CredentialConfigForm));
             this.application_id_label = new System.Windows.Forms.Label();
             this.application_key_label = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -154,6 +155,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.application_key_label);
             this.Controls.Add(this.application_id_label);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CredentialConfigForm";
             this.Text = "Form2";
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();

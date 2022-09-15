@@ -185,6 +185,7 @@ namespace B2VideoUploader.Helper
 
             }
 
+
         /**
          * Convert video to web compatible format.
          * 
@@ -195,7 +196,8 @@ namespace B2VideoUploader.Helper
          * Todo: use nvidia encode if available?
          */
 
-        public async Task<(string, string)> convertVideoToWebFormat(string inputFilePath, Action<double> onPercentageProgress)
+
+        public async Task<(string, string)> convertVideoToWebFormat(string inputFilePath, Action<double> onPercentageProgress )
         {
           /*
            * todo:
@@ -222,7 +224,7 @@ namespace B2VideoUploader.Helper
             }
             customLogger.LogInformation("Start converting video.");
 
-
+            //read percentage updates
             var onErrorHandler = (string msg) =>
             {
                 Match match = ProgressRegex.Match(msg);
@@ -233,18 +235,21 @@ namespace B2VideoUploader.Helper
                     onPercentageProgress!(obj2);
                 }
             };
+            
 
             var currentVideoCodec = mediaAnalysis.PrimaryVideoStream.GetCodecInfo();
             var currentAudioCodec = mediaAnalysis.PrimaryAudioStream.GetCodecInfo();
             var subtitleStream = mediaAnalysis.PrimarySubtitleStream?.CodecLongName;
-            await FFMpegArguments.FromFileInput(inputFilePath)
+            var task = FFMpegArguments.FromFileInput(inputFilePath)
                 .OutputToFile(outputPath, true, options => options
                 .WithVideoCodec(VideoCodec.LibX264)
                 .WithConstantRateFactor(20) //https://trac.ffmpeg.org/wiki/Encode/H.264#crf
                 .WithAudioCodec(AudioCodec.Aac)
                 .WithFastStart())
                 .NotifyOnError(onErrorHandler)
+                .CancellableThrough(out var cancel)
                 .ProcessAsynchronously();
+
             await WriteSha1File(outputPath);
             return (outputPath, container);
         }
