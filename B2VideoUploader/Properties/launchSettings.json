@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "B2VideoUploader": {
+      "commandName": "Project",
+      "nativeDebugging": true
+    }
+  }
+}

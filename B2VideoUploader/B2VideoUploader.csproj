@@ -51,7 +51,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Update="settings.ini" CopyToPublishDirectory="Never" CopyToOutputDirectory="PreserveNewest"/>
+    <None Update="settings.ini" CopyToPublishDirectory="Never" CopyToOutputDirectory="PreserveNewest" />
     <None Update="settings.sample.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

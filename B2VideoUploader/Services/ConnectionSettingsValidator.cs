@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B2VideoUploader.Helper
+namespace B2VideoUploader.Services
 {
     public class ConnectionSettingsValidator
     {
@@ -42,14 +42,14 @@ namespace B2VideoUploader.Helper
             }
             if (connectionStatusUpdated != null)
             {
-                connectionStatusUpdated(true, String.Empty);
+                connectionStatusUpdated(true, string.Empty);
             }
-            return (true, String.Empty);
+            return (true, string.Empty);
         }
 
         public async Task<(bool, string)> ValidateBucketConfiguration()
         {
-            return (true, String.Empty);
+            return (true, string.Empty);
         }
 
 
@@ -57,7 +57,8 @@ namespace B2VideoUploader.Helper
         /**
          * returns true if connecion settings are changed
          */
-        public void EditConnectionSettingsPrompt(OnConnectionStatusUpdated? connectionStatusUpdated = null) {
+        public void EditConnectionSettingsPrompt(OnConnectionStatusUpdated? connectionStatusUpdated = null)
+        {
 
             editConnectionSettingsForm.ShowEditCredentialsForm(config.ApplicationId, config.ApplicationKey, config.BucketId, HandleSaveCredentials);
             ValidateLoginConfiguration(connectionStatusUpdated);

@@ -1,17 +1,28 @@
-﻿using B2VideoUploader.Helper;
-using B2VideoUploader.Model;
+﻿using B2VideoUploader.Model;
+using B2VideoUploader.Services;
 using Microsoft.Extensions.Logging;
 using static System.Windows.Forms.ListViewItem;
 using ListView = System.Windows.Forms.ListView;
 
 namespace B2VideoUploader
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IOnProgressUploadEvents, IOnProgressConversionEvents
     {
         private readonly BlackBlazeUploadService b2UploadService;
         private readonly CustomLogger logger;
         private readonly ConnectionSettingsValidator connectionSettingsValidator;
         private FfmpegVideoConversionService ffmpegVideoConversionService;
+
+        public event EventHandler OnAuthError;
+
+        public event EventHandler<FileProgressEventArgs> OnUploadStart;
+        public event EventHandler<FileProgressEventArgs> OnUploadProgress;
+        public event EventHandler<FileProgressEventArgs> OnUploadComplete;
+        public event EventHandler<FileProgressEventArgs> OnUploadError;
+        public event EventHandler<FileProgressEventArgs> OnConversionStart;
+        public event EventHandler<FileProgressEventArgs> OnConversionProgress;
+        public event EventHandler<FileProgressEventArgs> OnConversionComplete;
+        public event EventHandler<FileProgressEventArgs> OnConversionError;
 
         public MainForm(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger, Config config, ConnectionSettingsValidator connectionSettingsValidator)
         {
@@ -54,17 +65,7 @@ namespace B2VideoUploader
                     }
                 );
             (bool isLoginValid, string errLoginString) = await connectionSettingsValidator.ValidateLoginConfiguration(this.OnConnectionStatusUpdated);
-            if(isLoginValid)
-            {
-                this.connection_status_string.Text = "Connected ✅";
-            } else
-            {
-                this.connection_status_string.Text = "Failed To Connect ❌";
-            }
-
             (bool isBucketValid, string errBucket) = await connectionSettingsValidator.ValidateBucketConfiguration();
-
-
         }
 
         private void btnAddVideosClick(object sender, EventArgs e)
@@ -88,7 +89,7 @@ namespace B2VideoUploader
             }
         }
 
-
+        
 
         private async Task<string> handleVideoUpload(string filePath, Action<string> progressCallback)
         {
@@ -120,16 +121,15 @@ namespace B2VideoUploader
             {
                 try
                 {
-                    tasks[taskCount++] = handleVideoTask(uploadInfo.FilePath, uploadInfo.InProgressListViewItem, uploadInfo.CompletedListView);
+                    Task task = handleVideoTask(uploadInfo.FilePath, uploadInfo.InProgressListViewItem, uploadInfo.CompletedListView);
+                    tasks[taskCount++] = task;
+                    await task;
+                    
                 } catch(Exception e)
                 {
                     logger.LogError(e.ToString());
                     throw;
                 }
-            }
-            foreach(Task task in tasks)
-            {
-                await task;
             }
         }
 

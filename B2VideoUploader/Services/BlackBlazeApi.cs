@@ -1,4 +1,5 @@
-﻿using B2VideoUploader.Model;
+﻿using B2VideoUploader.Helper;
+using B2VideoUploader.Model;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,7 +13,7 @@ using System.Net.Mime;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B2VideoUploader.Helper
+namespace B2VideoUploader.Services
 {
     public class BlackBlazeB2Api
     {
@@ -42,7 +43,7 @@ namespace B2VideoUploader.Helper
 
         public async Task<JObject> blackBlazeLogin(string applicationKeyId, string applicationKey)
         {
-            String credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(applicationKeyId + ":" + applicationKey));
+            string credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes(applicationKeyId + ":" + applicationKey));
 
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, LoginApiUrl);
             requestMessage.Headers.TryAddWithoutValidation("Authorization", $"Basic {credentials}");
@@ -60,9 +61,9 @@ namespace B2VideoUploader.Helper
             var data =
             new
             {
-                fileName = fileName,
-                bucketId = bucketId,
-                contentType = contentType,
+                fileName,
+                bucketId,
+                contentType,
                 fileInfo = new
                 {
                     large_file_sha1 = wholeSha1
@@ -85,7 +86,7 @@ namespace B2VideoUploader.Helper
 
             var data = new
             {
-                fileId = fileId
+                fileId
 
             };
 
@@ -106,8 +107,8 @@ namespace B2VideoUploader.Helper
             var endpoint = apiUrl + "/b2api/v2/b2_finish_large_file";
             var data = new
             {
-                fileId = fileId,
-                partSha1Array = partSha1Array
+                fileId,
+                partSha1Array
             };
 
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, endpoint);
@@ -158,7 +159,7 @@ namespace B2VideoUploader.Helper
 
             var data = new
             {
-                bucketId = bucketId,
+                bucketId,
             };
 
             HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Post, endpoint);
@@ -187,7 +188,7 @@ namespace B2VideoUploader.Helper
             var responseString = await responseMessage.Content.ReadAsStringAsync();
 
             logger.LogTrace(responseString);
-            
+
             return JObject.Parse(responseString);
         }
 
@@ -205,7 +206,7 @@ namespace B2VideoUploader.Helper
                 data.Add("bucketId", bucketId);
             }
 
-            if(bucketName != null)
+            if (bucketName != null)
             {
                 data.Add("bucketName", bucketName);
             }

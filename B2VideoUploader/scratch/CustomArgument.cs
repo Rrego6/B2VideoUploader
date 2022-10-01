@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B2VideoUploader.Model
+namespace B2VideoUploader.scratch
 {
     public class CustomArgument : IArgument
     {

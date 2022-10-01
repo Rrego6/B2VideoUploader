@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B2VideoUploader.Model
+namespace B2VideoUploader.scratch
 {
     public class AsyncJobQueue
     {
@@ -37,7 +37,8 @@ namespace B2VideoUploader.Model
 
         private void ProcessQueue()
         {
-            while (jobQueue.Any()) {
+            while (jobQueue.Any())
+            {
                 var job = jobQueue.Dequeue();
                 job();
             }

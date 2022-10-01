@@ -1,4 +1,4 @@
-using B2VideoUploader.Model;
+using B2VideoUploader.scratch;
 
 namespace B2VideoExplorer.Tests;
 
@@ -10,7 +10,7 @@ public class UnitTest1
     {
         Action action = () => { Task.Delay(200).Wait();  testVal++;  };
 
-        B2VideoUploader.Model.AsyncJobQueue j = new B2VideoUploader.Model.AsyncJobQueue();
+        AsyncJobQueue j = new B2VideoUploader.Model.AsyncJobQueue();
         j.Enqueue(new Action[] { action, action, action, action });
         j.Enqueue(new Action[] { action, action});
         j.WaitForJobs();

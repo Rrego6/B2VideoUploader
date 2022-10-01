@@ -1,4 +1,5 @@
-﻿using B2VideoUploader.Model;
+﻿using B2VideoUploader.Helper;
+using B2VideoUploader.Model;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
@@ -12,7 +13,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace B2VideoUploader.Helper
+namespace B2VideoUploader.Services
 {
     public class BlackBlazeUploadService
     {
@@ -21,7 +22,7 @@ namespace B2VideoUploader.Helper
         private readonly ILogger logger;
         private readonly Config config;
         JObject authResponse;
-         
+
         public BlackBlazeUploadService(BlackBlazeB2Api b2Api, CustomLogger logger, Config config)
         {
             this.b2Api = b2Api;
@@ -46,7 +47,8 @@ namespace B2VideoUploader.Helper
             if (localFileSize < config.MinLargeUploadSize)
             {
                 return await BlackBlazeUploadSmallFile(filePath, config.BucketId, contentType, progressCallback);
-            } else
+            }
+            else
             {
                 return await BlackBlazeUploadLargeFile(filePath, config.BucketId, contentType, progressCallback);
             }
@@ -74,9 +76,9 @@ namespace B2VideoUploader.Helper
         private async Task<string> BlackBlazeUploadSmallVideo(string filePath, string bucketID, Action<string>? progressCallback = null)
         {
 
-            return await BlackBlazeUploadSmallFile(filePath, bucketID, "video/mp4", progressCallback);
+            return await BlackBlazeUploadSmallFile(filePath, bucketID, "video/webm", progressCallback);
         }
-        
+
         private async Task<string> BlackBlazeUploadSmallFile(string filePath, string bucketID, string contentType, Action<string>? progressCallback = null)
         {
             FileInfo fileInfo = new FileInfo(filePath);
@@ -153,9 +155,9 @@ namespace B2VideoUploader.Helper
             while (totalBytesSent < localFileSize)
             {
                 var bytesToSend = config.UploadPartSize;
-                if ((localFileSize - totalBytesSent) < minimumPartSize)
+                if (localFileSize - totalBytesSent < minimumPartSize)
                 {
-                    bytesToSend = (localFileSize - totalBytesSent);
+                    bytesToSend = localFileSize - totalBytesSent;
                 }
 
                 byte[] dataChunk = Util.getDataChunk(filePath, totalBytesSent, bytesToSend);
@@ -233,7 +235,7 @@ namespace B2VideoUploader.Helper
             {
                 var unfinishedFileResponse = await b2Api.b2ListUnFinishedLargeFiles(apiUrl, accountAuthorizationToken, bucketId, fileName);
                 var unfinishedLargeFileId = (string)unfinishedFileResponse["files"][0]["fileId"]; //grab the first file
-                if (String.IsNullOrEmpty(unfinishedLargeFileId))
+                if (string.IsNullOrEmpty(unfinishedLargeFileId))
                 {
                     return null;
                 }
@@ -292,7 +294,7 @@ namespace B2VideoUploader.Helper
 
         private async Task<string> BlackBlazeUploadLargeVideo(string filePath, string bucketId, Action<string>? progressCallback = null)
         {
-            return await BlackBlazeUploadLargeFile(filePath, bucketId, "video/mp4", progressCallback);
+            return await BlackBlazeUploadLargeFile(filePath, bucketId, "video/webm", progressCallback);
         }
 
         private IEnumerable<Task<JObject>> b2GetUploadPartUrlList(string apiUrl, string authorizationToken, string fileId, int numParts)

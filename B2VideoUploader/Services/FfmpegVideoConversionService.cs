@@ -1,4 +1,5 @@
-﻿using B2VideoUploader.Model;
+﻿using B2VideoUploader.Helper;
+using B2VideoUploader.Model;
 using FFMpegCore;
 using FFMpegCore.Arguments;
 using FFMpegCore.Enums;
@@ -15,9 +16,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using CustomArgument = B2VideoUploader.Model.CustomArgument;
+using CustomArgument = B2VideoUploader.scratch.CustomArgument;
 
-namespace B2VideoUploader.Helper
+namespace B2VideoUploader.Services
 {
     public class FfmpegVideoConversionService
     {
@@ -69,7 +70,7 @@ namespace B2VideoUploader.Helper
                             )
                         )
                     );
-            var subtitleProp = !String.IsNullOrEmpty(subtitleUrl) ?
+            var subtitleProp = !string.IsNullOrEmpty(subtitleUrl) ?
                 new JProperty("textTracks",
                     new JArray(
                         new JObject(
@@ -85,11 +86,12 @@ namespace B2VideoUploader.Helper
             string jsonFilePath = $"{getTempVideoStoragePath()}/{fileName}.json";
             if (subtitleProp != null)
             {
-                File.WriteAllText(jsonFilePath, 
+                File.WriteAllText(jsonFilePath,
                     new JObject(titleProp, durationProp, sourcesProp, subtitleProp)
                     .ToString(Newtonsoft.Json.Formatting.Indented)
                     );
-            } else
+            }
+            else
             {
                 File.WriteAllText(jsonFilePath,
                     new JObject(titleProp, durationProp, sourcesProp)
@@ -105,7 +107,7 @@ namespace B2VideoUploader.Helper
             //use lower resolution in case heigh is slightly heigher ie (361 px instead of 360)
             int offsetFudge = 4;
             height = height - offsetFudge;
-            return height <= 240  ? 240
+            return height <= 240 ? 240
                 : height <= 360 ? 360
                 : height <= 480 ? 480
                 : height <= 540 ? 540
@@ -117,9 +119,12 @@ namespace B2VideoUploader.Helper
 
         private async Task WriteSha1File(string outputFilePath)
         {
-            var infoFilePath = $"{Path.GetDirectoryName(outputFilePath)}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(outputFilePath)}.sha1";
-            var sha1Array = await Util.CreateSha1Array(outputFilePath, config.UploadPartSize);
-            await File.WriteAllLinesAsync(infoFilePath, sha1Array);
+            await Task.Run(async () =>
+            {
+                var infoFilePath = $"{Path.GetDirectoryName(outputFilePath)}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(outputFilePath)}.sha1";
+                var sha1Array = await Util.CreateSha1Array(outputFilePath, config.UploadPartSize);
+                await File.WriteAllLinesAsync(infoFilePath, sha1Array);
+            });
         }
 
         private async Task<bool> CheckOutputVideoIntegrity(string outputFilePath)
@@ -129,7 +134,7 @@ namespace B2VideoUploader.Helper
             {
                 var sha1Array = await Util.CreateSha1Array(outputFilePath, config.UploadPartSize);
                 var read = await File.ReadAllLinesAsync(infoFilePath);
-                if(Enumerable.SequenceEqual(read, sha1Array))
+                if (read.SequenceEqual(sha1Array))
                 {
                     return true;
                 }
@@ -150,7 +155,7 @@ namespace B2VideoUploader.Helper
             var fileName = Path.GetFileNameWithoutExtension(inputFilePath);
             var outputPath = $"{getTempVideoStoragePath()}/{fileName}.vtt";
 
-            var userProvidedSubFileName =  $"{Path.GetDirectoryName(inputFilePath)}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(inputFilePath)}.srt";
+            var userProvidedSubFileName = $"{Path.GetDirectoryName(inputFilePath)}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(inputFilePath)}.srt";
             if (File.Exists(userProvidedSubFileName))
             {
                 customLogger.LogInformation("Found user provided subtitles");
@@ -174,7 +179,7 @@ namespace B2VideoUploader.Helper
                         ).ProcessAsynchronously();
                 return outputPath;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (File.Exists(outputPath))
                 {
@@ -183,7 +188,7 @@ namespace B2VideoUploader.Helper
                 return null;
             }
 
-            }
+        }
 
 
         /**
@@ -197,15 +202,15 @@ namespace B2VideoUploader.Helper
          */
 
 
-        public async Task<(string, string)> convertVideoToWebFormat(string inputFilePath, Action<double> onPercentageProgress )
+        public async Task<(string, string)> convertVideoToWebFormat(string inputFilePath, Action<double>? onPercentageProgress = null)
         {
-          /*
-           * todo:
-           * AnalyzeInputFile and return if valid for web
-           * Analyze output file and return if valid for 
-           */
+            /*
+             * todo:
+             * AnalyzeInputFile and return if valid for web
+             * Analyze output file and return if valid for 
+             */
             var fileName = Path.GetFileNameWithoutExtension(inputFilePath);
-            var outputPath = $"{getTempVideoStoragePath()}/{fileName}.mp4";
+            var outputPath = $"{getTempVideoStoragePath()}/{fileName}.webm";
             var mediaAnalysis = await FFProbe.AnalyseAsync(inputFilePath);
             var container = mediaAnalysis.Format.FormatName;
 
@@ -235,24 +240,37 @@ namespace B2VideoUploader.Helper
                     onPercentageProgress!(obj2);
                 }
             };
-            
 
-            var currentVideoCodec = mediaAnalysis.PrimaryVideoStream.GetCodecInfo();
-            var currentAudioCodec = mediaAnalysis.PrimaryAudioStream.GetCodecInfo();
+            var test = FFMpeg.GetVideoCodecs();
             var subtitleStream = mediaAnalysis.PrimarySubtitleStream?.CodecLongName;
+
             var task = FFMpegArguments.FromFileInput(inputFilePath)
                 .OutputToFile(outputPath, true, options => options
-                .WithVideoCodec(VideoCodec.LibX264)
-                .WithConstantRateFactor(20) //https://trac.ffmpeg.org/wiki/Encode/H.264#crf
+                .WithVideoCodec(Av1Codec.LibSvtAv1)
                 .WithAudioCodec(AudioCodec.Aac)
+                .WithVariableBitrate(5)
+                .WithCustomArgument("-preset 5")
+                .WithCustomArgument("-crf 30")
+                .WithCustomArgument("-pix_fmt yuv420p10le")
+                .WithCustomArgument("-g 240")
+                .WithCustomArgument("-svtav1-params tune=0:film-grain=8")
                 .WithFastStart())
                 .NotifyOnError(onErrorHandler)
                 .CancellableThrough(out var cancel)
                 .ProcessAsynchronously();
 
+            var OnApplicationExit = new EventHandler((sender, e) =>
+            {
+                cancel();
+            }); ;
+
+            Application.ApplicationExit += OnApplicationExit;
             await task;
+            Application.ApplicationExit -= OnApplicationExit;
             await WriteSha1File(outputPath);
             return (outputPath, container);
         }
     }
 }
+
+
