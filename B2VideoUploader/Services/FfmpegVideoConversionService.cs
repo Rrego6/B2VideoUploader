@@ -65,7 +65,7 @@ namespace B2VideoUploader.Services
                     new JArray(
                         new JObject(
                             new JProperty("url", videoUrl),
-                            new JProperty("contentType", "video/mp4"),
+                            new JProperty("contentType", "video/webm"),
                             new JProperty("quality", quality)
                             )
                         )
@@ -173,7 +173,7 @@ namespace B2VideoUploader.Services
             {
                 await FFMpegArguments.FromFileInput(inputFilePath)
                     .OutputToFile(outputPath, false, options => options
-                        .WithArgument(new CustomArgument("-map 0:m:language:eng"))
+                        .WithArgument(new CustomArgument("-map 0:m:language:eng?"))
                         .WithArgument(new CustomArgument("-map -0:v"))
                         .WithArgument(new CustomArgument("-map -0:a"))
                         ).ProcessAsynchronously();
@@ -194,10 +194,9 @@ namespace B2VideoUploader.Services
         /**
          * Convert video to web compatible format.
          * 
-         * Currently will convert to h264 in a single-pass. Ideally, vp9 should be used a two pass mode.
+         * Currently will convert to a webm container with av1 video and libopus audio
          * 
-         * Todo: Dont reencode valid files
-         * Todo: switch to vp9??
+         * 
          * Todo: use nvidia encode if available?
          */
 
@@ -246,14 +245,15 @@ namespace B2VideoUploader.Services
 
             var task = FFMpegArguments.FromFileInput(inputFilePath)
                 .OutputToFile(outputPath, true, options => options
-                .WithVideoCodec(Av1Codec.LibSvtAv1)
-                .WithAudioCodec(AudioCodec.Aac)
-                .WithVariableBitrate(5)
+                .WithVideoCodec(MyCodecs.LibSvtAv1)
+                .WithAudioCodec(MyCodecs.LibOpus)
+                .WithCustomArgument("-ac 2") //force channel stereo mixing due to https://trac.ffmpeg.org/ticket/5718
+                .WithCustomArgument("-sn") //remove subtitles
                 .WithCustomArgument("-preset 5")
                 .WithCustomArgument("-crf 30")
-                .WithCustomArgument("-pix_fmt yuv420p10le")
+                .WithCustomArgument("-pix_fmt yuv420p10le") //use 10 bit video
                 .WithCustomArgument("-g 240")
-                .WithCustomArgument("-svtav1-params tune=0:film-grain=8")
+                .WithCustomArgument("-svtav1-params tune=0:film-grain=8") //use syntehthic film grain
                 .WithFastStart())
                 .NotifyOnError(onErrorHandler)
                 .CancellableThrough(out var cancel)

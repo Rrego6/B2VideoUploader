@@ -22,6 +22,8 @@ namespace FFmpegInterop
             {
                 ffMpegProcess.StartInfo.FileName = FFmpegPath;
                 ffMpegProcess.StartInfo.Arguments = cmd;
+                ffMpegProcess.StartInfo.UseShellExecute = false;
+                ffMpegProcess.Start();
             }
         }
 

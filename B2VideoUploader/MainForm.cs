@@ -6,23 +6,12 @@ using ListView = System.Windows.Forms.ListView;
 
 namespace B2VideoUploader
 {
-    public partial class MainForm : Form, IOnProgressUploadEvents, IOnProgressConversionEvents
+    public partial class MainForm : Form
     {
         private readonly BlackBlazeUploadService b2UploadService;
         private readonly CustomLogger logger;
         private readonly ConnectionSettingsValidator connectionSettingsValidator;
         private FfmpegVideoConversionService ffmpegVideoConversionService;
-
-        public event EventHandler OnAuthError;
-
-        public event EventHandler<FileProgressEventArgs> OnUploadStart;
-        public event EventHandler<FileProgressEventArgs> OnUploadProgress;
-        public event EventHandler<FileProgressEventArgs> OnUploadComplete;
-        public event EventHandler<FileProgressEventArgs> OnUploadError;
-        public event EventHandler<FileProgressEventArgs> OnConversionStart;
-        public event EventHandler<FileProgressEventArgs> OnConversionProgress;
-        public event EventHandler<FileProgressEventArgs> OnConversionComplete;
-        public event EventHandler<FileProgressEventArgs> OnConversionError;
 
         public MainForm(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger, Config config, ConnectionSettingsValidator connectionSettingsValidator)
         {

@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 
 namespace B2VideoUploader.Model
 {
-    public class Av1Codec
+    public class MyCodecs
     {
         public static Codec LibSvtAv1 => FFMpeg.GetCodec("libsvtav1");
+        public static Codec LibOpus => FFMpeg.GetCodec("libopus");
     }
 }

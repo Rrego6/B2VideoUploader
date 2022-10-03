@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "B2VideoExplorer.Tests", "B2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{77899376-284B-4013-8052-133B60F54875}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFmpegInterop", "FFmpegInterop\FFmpegInterop.csproj", "{42CBB240-B5E1-4D4D-8A48-4B95F9AFF93D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,6 +24,10 @@ Global
 		{DABEE184-D2D5-451E-A259-CF089524BA75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DABEE184-D2D5-451E-A259-CF089524BA75}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DABEE184-D2D5-451E-A259-CF089524BA75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42CBB240-B5E1-4D4D-8A48-4B95F9AFF93D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42CBB240-B5E1-4D4D-8A48-4B95F9AFF93D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42CBB240-B5E1-4D4D-8A48-4B95F9AFF93D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42CBB240-B5E1-4D4D-8A48-4B95F9AFF93D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
