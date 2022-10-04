@@ -15,9 +15,9 @@ Tool to upload videos to BlackBlaze B2 for consumption by Cytube after convertin
 
 ### TODO
 
-- Fix Retry Mechanism
-- Refactor video processing logic into VideoProcessorService
-- Use events or mediators instead of passing callbacks
+- Add Retry Mechanism for uploads
+- Refactor video processing logic into VideoProcessorService (remove from mainform)
+- Use events or mediators instead of passing callbacks for upading MainForm UI
 - Clean up code
 - clean up half uploads
 - Write tests
