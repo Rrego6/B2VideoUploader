@@ -20,13 +20,16 @@ using CustomArgument = B2VideoUploader.scratch.CustomArgument;
 
 namespace B2VideoUploader.Services
 {
-    public class FfmpegVideoConversionService
+    public class FfmpegVideoConversionService : IOnProgressConversionEvents
     {
         private readonly CustomLogger customLogger;
         private readonly Config config;
         private static readonly Regex ProgressRegex = new Regex("time=(\\d\\d:\\d\\d:\\d\\d.\\d\\d?)", RegexOptions.Compiled);
 
-
+        public event EventHandler<FileProgressEventArgs> OnConversionStart;
+        public event EventHandler<FileProgressEventArgs> OnConversionProgress;
+        public event EventHandler<FileProgressEventArgs> OnConversionComplete;
+        public event EventHandler<FileProgressEventArgs> OnConversionError;
 
         public FfmpegVideoConversionService(CustomLogger customLogger, Config config)
         {
@@ -148,8 +151,9 @@ namespace B2VideoUploader.Services
         /**
          * todo: have user select subtitle instead of guessing?
          */
-        public async Task<string?> extractSubtitles(string inputFilePath)
+        public async Task<VideoFileTransformContainer?> extractSubtitles(VideoFileTransformContainer video)
         {
+            string inputFilePath = video.inputFilePath;
             customLogger.LogInformation("Begin extracting subtitles.");
 
             var fileName = Path.GetFileNameWithoutExtension(inputFilePath);
@@ -161,12 +165,14 @@ namespace B2VideoUploader.Services
                 customLogger.LogInformation("Found user provided subtitles");
                 await FFMpegArguments.FromFileInput(userProvidedSubFileName)
                     .OutputToFile(outputPath, true).ProcessAsynchronously();
-                return outputPath;
+                video.subtitlesFilePath = outputPath;
+                return video;
             }
 
             if (File.Exists(outputPath))
             {
-                return outputPath;
+                video.subtitlesFilePath = outputPath;
+                return video;
             }
             var mediaAnalysis = await FFProbe.AnalyseAsync(inputFilePath);
             try
@@ -177,7 +183,8 @@ namespace B2VideoUploader.Services
                         .WithArgument(new CustomArgument("-map -0:v"))
                         .WithArgument(new CustomArgument("-map -0:a"))
                         ).ProcessAsynchronously();
-                return outputPath;
+                video.subtitlesFilePath = outputPath;
+                return video;
             }
             catch (Exception e)
             {
@@ -185,7 +192,7 @@ namespace B2VideoUploader.Services
                 {
                     File.Delete(outputPath);
                 }
-                return null;
+                return video;
             }
 
         }
@@ -198,21 +205,17 @@ namespace B2VideoUploader.Services
          * 
          * 
          * Todo: use nvidia encode if available?
+         * Todo: Check if video is already a webm (may not be enough as we still might want to extract subtitles)
          */
-
-
-        public async Task<(string, string)> convertVideoToWebFormat(string inputFilePath, Action<double>? onPercentageProgress = null)
+        public async Task<VideoFileTransformContainer> convertVideoToWebFormat(VideoFileTransformContainer video)
         {
-            /*
-             * todo:
-             * AnalyzeInputFile and return if valid for web
-             * Analyze output file and return if valid for 
-             */
-            var fileName = Path.GetFileNameWithoutExtension(inputFilePath);
+            var fileName = video.fileName;
             var outputPath = $"{getTempVideoStoragePath()}/{fileName}.webm";
-            var mediaAnalysis = await FFProbe.AnalyseAsync(inputFilePath);
+            var mediaAnalysis = await FFProbe.AnalyseAsync(video.inputFilePath);
             var container = mediaAnalysis.Format.FormatName;
 
+            video.outputFilePath = outputPath;
+`
             customLogger.LogInformation("Check if video has already been converted and is valid.");
 
             //check if video has already been converted and file exists
@@ -222,10 +225,12 @@ namespace B2VideoUploader.Services
                 if (validateExistingOutput)
                 {
                     customLogger.LogInformation("Converted video already exists");
-                    return (outputPath, container);
+                    OnConversionComplete?.Invoke(this, new FileProgressEventArgs(video));
+                    return video;
                 }
 
             }
+
             customLogger.LogInformation("Start converting video.");
 
             //read percentage updates
@@ -235,15 +240,17 @@ namespace B2VideoUploader.Services
                 if (match.Success)
                 {
                     TimeSpan obj = TimeSpan.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture);
-                    double obj2 = Math.Round(obj.TotalSeconds / mediaAnalysis.Duration.TotalSeconds * 100.0, 2);
-                    onPercentageProgress!(obj2);
+                    double percentageUpdate = Math.Round(obj.TotalSeconds / mediaAnalysis.Duration.TotalSeconds * 100.0, 2);
+                    string statusMessage = $"{percentageUpdate}% encoded";
+                    customLogger.LogInformation(statusMessage);
+                    OnConversionComplete?.Invoke(this, new FileProgressEventArgs(video, statusMessage));
                 }
             };
 
             var test = FFMpeg.GetVideoCodecs();
             var subtitleStream = mediaAnalysis.PrimarySubtitleStream?.CodecLongName;
 
-            var task = FFMpegArguments.FromFileInput(inputFilePath)
+            var task = FFMpegArguments.FromFileInput(video.inputFilePath)
                 .OutputToFile(outputPath, true, options => options
                 .WithVideoCodec(MyCodecs.LibSvtAv1)
                 .WithAudioCodec(MyCodecs.LibOpus)
@@ -268,7 +275,7 @@ namespace B2VideoUploader.Services
             await task;
             Application.ApplicationExit -= OnApplicationExit;
             await WriteSha1File(outputPath);
-            return (outputPath, container);
+            return video;
         }
     }
 }

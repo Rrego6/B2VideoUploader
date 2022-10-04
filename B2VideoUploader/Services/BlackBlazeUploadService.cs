@@ -12,16 +12,22 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace B2VideoUploader.Services
 {
-    public class BlackBlazeUploadService
+    public class BlackBlazeUploadService : IOnProgressUploadEvents
     {
 
         private readonly BlackBlazeB2Api b2Api;
         private readonly ILogger logger;
         private readonly Config config;
         JObject authResponse;
+
+        public event EventHandler<FileProgressEventArgs> OnUploadStart;
+        public event EventHandler<FileProgressEventArgs> OnUploadProgress;
+        public event EventHandler<FileProgressEventArgs> OnUploadComplete;
+        public event EventHandler<FileProgressEventArgs> OnUploadError;
 
         public BlackBlazeUploadService(BlackBlazeB2Api b2Api, CustomLogger logger, Config config)
         {
@@ -35,8 +41,30 @@ namespace B2VideoUploader.Services
             authResponse = await b2Api.blackBlazeLogin(config.ApplicationId, config.ApplicationKey);
         }
 
-        public async Task<string> uploadFile(string filePath, string contentType, Action<string>? progressCallback = null)
+        public async Task<string> uploadFile(string filePath, string contentType)
         {
+            if (authResponse == null)
+            {
+                await initService();
+            }
+            
+            FileInfo fileInfo = new FileInfo(filePath);
+            long localFileSize = fileInfo.Length;
+            if (localFileSize < config.MinLargeUploadSize)
+            {
+                return await BlackBlazeUploadSmallFile(filePath, config.BucketId, contentType);
+            }
+            else
+            {
+                return await BlackBlazeUploadLargeFile(filePath, config.BucketId, contentType);
+            }
+        }
+
+        public async Task<string> uploadVideo(string filePath)
+        {
+            var args = new FileProgressEventArgs(video);
+            OnUploadStart?.Invoke(this, args);
+
             if (authResponse == null)
             {
                 await initService();
@@ -46,45 +74,27 @@ namespace B2VideoUploader.Services
             long localFileSize = fileInfo.Length;
             if (localFileSize < config.MinLargeUploadSize)
             {
-                return await BlackBlazeUploadSmallFile(filePath, config.BucketId, contentType, progressCallback);
+                return await BlackBlazeUploadSmallVideo(filePath, config.BucketId);
             }
             else
             {
-                return await BlackBlazeUploadLargeFile(filePath, config.BucketId, contentType, progressCallback);
+                return await BlackBlazeUploadLargeVideo(filePath, config.BucketId);
             }
         }
 
-        public async Task<string> uploadVideo(string filePath, Action<string>? progressCallback = null)
-        {
-            if (authResponse == null)
-            {
-                await initService();
-            }
-
-            FileInfo fileInfo = new FileInfo(filePath);
-            long localFileSize = fileInfo.Length;
-            if (localFileSize < config.MinLargeUploadSize)
-            {
-                return await BlackBlazeUploadSmallVideo(filePath, config.BucketId, progressCallback);
-            }
-            else
-            {
-                return await BlackBlazeUploadLargeVideo(filePath, config.BucketId, progressCallback);
-            }
-        }
-
-        private async Task<string> BlackBlazeUploadSmallVideo(string filePath, string bucketID, Action<string>? progressCallback = null)
+        private async Task<string> BlackBlazeUploadSmallVideo(VideoFileTransformContainer video, string bucketID)
         {
 
-            return await BlackBlazeUploadSmallFile(filePath, bucketID, "video/webm", progressCallback);
+            return await BlackBlazeUploadSmallFile(video, bucketID, "video/webm");
         }
 
-        private async Task<string> BlackBlazeUploadSmallFile(string filePath, string bucketID, string contentType, Action<string>? progressCallback = null)
+        private async Task<string> BlackBlazeUploadSmallFile(string filePath, string bucketID, string contentType)
         {
             FileInfo fileInfo = new FileInfo(filePath);
             string fileName = fileInfo.Name;
             long contentLength = fileInfo.Length;
-            logger.LogInformation($"Begin Uploading of Small Video ({fileName})");
+
+            logger.LogInformation($"Begin Uploading of Small File ({fileName})");
 
             string apiUrl = (string)authResponse["apiUrl"];
             string accountAuthorizationToken = (string)authResponse["authorizationToken"];
@@ -97,11 +107,11 @@ namespace B2VideoUploader.Services
             var uploadUrl = (string)getUploadUrlResponse["uploadUrl"];
             var uploadAuthorizationToken = (string)getUploadUrlResponse["authorizationToken"];
 
-            byte[] dataChunk = Util.getDataChunk(filePath, 0, contentLength);
-            string sha1CheckSum = Util.calcSha1(dataChunk, (int)contentLength);
+            byte[] dataChunk = await Util.getDataChunkAsync(filePath, 0, contentLength);
+            string sha1CheckSum = await Util.calcSha1Async(dataChunk, (int)contentLength);
 
             var getUploadFileResponse = await b2Api.b2UploadFile(uploadUrl, uploadAuthorizationToken, fileName, contentType, (int)contentLength, sha1CheckSum, dataChunk);
-            logger.LogInformation($"Completed Uploading of Small Video ({fileName})");
+            logger.LogInformation($"Completed Uploading of Small File ({fileName})");
 
             var downloadBaseUrl = authResponse["downloadUrl"];
             var bucketName = bucketInfoResponse["buckets"][0]["bucketName"];
@@ -126,7 +136,7 @@ namespace B2VideoUploader.Services
 
             //check if file already exists
             //if file exists, get sha1 of whole file, then check sha1
-            var wholeFileSha1 = Util.calcSha1(filePath);
+            var wholeFileSha1 = await Util.calcSha1Async(filePath);
 
             var downloadBaseUrl = authResponse["downloadUrl"];
             var bucketName = bucketInfoResponse["buckets"][0]["bucketName"];
@@ -160,7 +170,7 @@ namespace B2VideoUploader.Services
                     bytesToSend = localFileSize - totalBytesSent;
                 }
 
-                byte[] dataChunk = Util.getDataChunk(filePath, totalBytesSent, bytesToSend);
+                byte[] dataChunk = Util.getDataChunkAsync(filePath, totalBytesSent, bytesToSend);
                 string sha1CheckSum = sha1Array[partNum - 1];
 
                 var uploadUrlResponse = await b2GetUploadPartUrl;

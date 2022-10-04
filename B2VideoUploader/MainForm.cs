@@ -1,6 +1,7 @@
 ﻿using B2VideoUploader.Model;
 using B2VideoUploader.Services;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualBasic;
 using static System.Windows.Forms.ListViewItem;
 using ListView = System.Windows.Forms.ListView;
 
@@ -11,13 +12,15 @@ namespace B2VideoUploader
         private readonly BlackBlazeUploadService b2UploadService;
         private readonly CustomLogger logger;
         private readonly ConnectionSettingsValidator connectionSettingsValidator;
+        private readonly VideoProcessorService videoProcessorService;
         private FfmpegVideoConversionService ffmpegVideoConversionService;
 
-        public MainForm(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger, Config config, ConnectionSettingsValidator connectionSettingsValidator)
+        public MainForm(BlackBlazeUploadService b2UploadService, FfmpegVideoConversionService ffmpegVideoConversionService, CustomLogger logger, Config config, ConnectionSettingsValidator connectionSettingsValidator, VideoProcessorService videoProcessorService)
         {
             this.b2UploadService = b2UploadService;
             this.logger = logger;
             this.connectionSettingsValidator = connectionSettingsValidator;
+            this.videoProcessorService = videoProcessorService;
             this.ffmpegVideoConversionService = ffmpegVideoConversionService;
             InitializeComponent();
             InitApplication();
@@ -46,8 +49,19 @@ namespace B2VideoUploader
             });
         }
 
+
         private async void InitApplication()
         {
+            videoProcessorService.OnConversionStart += onConversionStart;
+            videoProcessorService.OnConversionProgress += onConversionProgress;
+            videoProcessorService.OnConversionComplete += onConversionComplete;
+            videoProcessorService.OnConversionError += onConversionError;
+            videoProcessorService.OnUploadStart += onUploadStart;
+            videoProcessorService.OnUploadProgress += onUploadProgress;
+            videoProcessorService.OnUploadComplete += onUploadComplete;
+            videoProcessorService.OnUploadError += onUploaderror;
+
+
             logger.addLoggingSubscriber(
                 (logMessage) => {
                     loggingListView.Invoke(() => { loggingListView.Items.Add(logMessage); });
@@ -55,6 +69,83 @@ namespace B2VideoUploader
                 );
             (bool isLoginValid, string errLoginString) = await connectionSettingsValidator.ValidateLoginConfiguration(this.OnConnectionStatusUpdated);
             (bool isBucketValid, string errBucket) = await connectionSettingsValidator.ValidateBucketConfiguration();
+        }
+
+        private ListViewItem? getRelevantListViewItemFromFilePath(string fileName)
+        {
+            return inProgressListView.Items.Find(fileName, false)?.First();
+        }
+
+        private void onConversionStart(object? sender, FileProgressEventArgs args)
+        {
+            var item = getRelevantListViewItemFromFilePath(args.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                item.SubItems[1].Text = "Started";
+            });
+        }
+
+        private void onConversionProgress(object? sender, FileProgressEventArgs e)
+        {
+            var item = getRelevantListViewItemFromFilePath(e.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                item.SubItems[3].Text = e.ProgressString;
+            });
+        }
+
+        private void onConversionComplete(object? sender, FileProgressEventArgs e)
+        {
+            var item = getRelevantListViewItemFromFilePath(e.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                item.SubItems[1].Text = "Complete";
+            });
+        }
+
+        private void onConversionError(object? sender, FileProgressEventArgs e)
+        {
+            var item = getRelevantListViewItemFromFilePath(e.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                inProgressListView.Items.Remove(item);
+            });
+        }
+
+        private void onUploadStart(object? sender, FileProgressEventArgs e)
+        {
+            var item = getRelevantListViewItemFromFilePath(e.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                item.SubItems[2].Text = "Started";
+            });
+        }
+
+        private void onUploadProgress(object? sender, FileProgressEventArgs e)
+        {
+            var item = getRelevantListViewItemFromFilePath(e.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                item.SubItems[3].Text = e.ProgressString;
+            });
+        }
+
+        private void onUploadComplete(object? sender, FileProgressEventArgs e)
+        {
+            var item = getRelevantListViewItemFromFilePath(e.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                item.SubItems[2].Text = "Complete";
+            });
+        }
+
+        private void onUploaderror(object? sender, FileProgressEventArgs e)
+        {
+            var item = getRelevantListViewItemFromFilePath(e.Video.fileName);
+            inProgressListView.Invoke(() =>
+            {
+                inProgressListView.Items.Remove(item);
+            });
         }
 
         private void btnAddVideosClick(object sender, EventArgs e)
@@ -125,20 +216,8 @@ namespace B2VideoUploader
         //todo: Move to VideoUploadService
         private async Task handleVideoTask(string filePath, ListViewItem inProgressListViewItem, ListView completedListView)
         {
-            inProgressListViewItem.SubItems[1] = new ListViewSubItem(inProgressListViewItem, "Started");
-            inProgressListViewItem.SubItems[2] = new ListViewSubItem(inProgressListViewItem, "Not Started");
-            var (outputVideoFilePath, subtitleFilePathTemp) = await ffmpegVideoConversionService.convertVideoToWebFormat(filePath,
-                (double percentageUpdate) =>
-                {
-                    string statusMessage = $"{percentageUpdate}% encoded";
-                    logger.LogInformation(statusMessage);
-                    inProgressListView.Invoke(() =>
-                    {
-                        inProgressListViewItem.SubItems[3] = new ListViewSubItem(inProgressListViewItem, statusMessage);
-                        inProgressListView.Invoke(inProgressListView.Update);
-                    });
-                }
-                );
+
+            var (outputVideoFilePath, subtitleFilePathTemp) = await ffmpegVideoConversionService.convertVideoToWebFormat(filePath);
             var subtitleFilePath = await ffmpegVideoConversionService.extractSubtitles(filePath);
             inProgressListViewItem.SubItems[1] = new ListViewSubItem(inProgressListViewItem, "Finished");
             inProgressListViewItem.SubItems[2] = new ListViewSubItem(inProgressListViewItem, "Started");

@@ -10,7 +10,7 @@ using static System.Windows.Forms.ListViewItem;
 
 namespace B2VideoUploader.Services
 {
-    class VideoProcessorService : IOnProgressConversionEvents, IOnProgressUploadEvents
+    public class VideoProcessorService : IOnProgressConversionEvents, IOnProgressUploadEvents
     {
         private readonly BlackBlazeUploadService b2UploadService;
         private readonly FfmpegVideoConversionService ffmpegVideoConversionService;
@@ -26,7 +26,32 @@ namespace B2VideoUploader.Services
             this.logger = logger;
             semaphoreEncoding = new SemaphoreSlim(1);
             semaphoreUpload = new SemaphoreSlim(1);
+            ffmpegVideoConversionService.OnConversionStart += (sender, e) => OnConversionStart?.Invoke(sender, e);
+            ffmpegVideoConversionService.OnConversionProgress += (sender, e) => OnConversionProgress?.Invoke(sender, e);
+            ffmpegVideoConversionService.OnConversionComplete += (sender, e) => OnConversionComplete?.Invoke(sender, e);
+            ffmpegVideoConversionService.OnConversionError += (sender, e) => OnConversionError?.Invoke(sender, e);
+            b2UploadService.OnUploadStart += (sender, e) => OnUploadStart?.Invoke(sender, e);
+            b2UploadService.OnUploadProgress += (sender, e) => OnUploadProgress?.Invoke(sender, e);
+            b2UploadService.OnUploadComplete += (sender, e) => OnUploadComplete?.Invoke(sender, e);
+            b2UploadService.OnUploadError += (sender, e) => OnUploadError?.Invoke(sender, e);
+
+
         }
+
+        public event EventHandler<FileProgressEventArgs> OnConversionStart;
+        public event EventHandler<FileProgressEventArgs> OnConversionProgress;
+        public event EventHandler<FileProgressEventArgs> OnConversionComplete;
+        public event EventHandler<FileProgressEventArgs> OnConversionError;
+        public event EventHandler<FileProgressEventArgs> OnUploadStart;
+        public event EventHandler<FileProgressEventArgs> OnUploadProgress;
+        public event EventHandler<FileProgressEventArgs> OnUploadComplete;
+        public event EventHandler<FileProgressEventArgs> OnUploadError;
+
+        private void syncEvents()
+        {
+
+        }
+
 
         public Task<string> processVideoAsync(string filePath)
         {

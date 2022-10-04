@@ -48,8 +48,8 @@ namespace B2VideoUploader.Helper
                         bytesToSend = (localFileSize - totalBytesSent);
                     }
 
-                    byte[] dataChunk = Util.getDataChunk(filePath, totalBytesSent, bytesToSend);
-                    string sha1CheckSum = Util.calcSha1(dataChunk, (int)bytesToSend);
+                    byte[] dataChunk = Util.getDataChunkAsync(filePath, totalBytesSent, bytesToSend);
+                    string sha1CheckSum = Util.calcSha1Async(dataChunk, (int)bytesToSend);
 
                     //store sha1 for validation later
                     sha1Array[partNum - 1] = sha1CheckSum;
@@ -70,41 +70,46 @@ namespace B2VideoUploader.Helper
             return Uri.EscapeDataString(str);
         }
 
-        public static byte[] getDataChunk(string filePath, long initByte, long bytesToRead)
+        public static async Task<byte[]> getDataChunkAsync(string filePath, long initByte, long bytesToRead)
         {
             FileStream f = File.OpenRead(filePath);
             byte[] data = new byte[bytesToRead];
-
             f.Seek(initByte, SeekOrigin.Begin);
-            f.Read(data, 0, (int)bytesToRead);
+            await f.ReadAsync(data, 0, (int)bytesToRead);
             f.Close();
             return data;
         }
 
-        public static string calcSha1(byte[] data, int dataLength)
+        public async static string calcSha1Async(byte[] data, int dataLength)
         {
-            SHA1 sha1 = SHA1.Create();
-            byte[] hashData = sha1.ComputeHash(data, 0, dataLength);
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in hashData)
+            return await Task.Run(() =>
             {
-                sb.Append(b.ToString("x2"));
-            }
-            return sb.ToString();
+                SHA1 sha1 = SHA1.Create();
+                byte[] hashData = sha1.ComputeHash(data, 0, dataLength);
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in hashData)
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+                return sb.ToString();
+            });
         }
 
-        public static string calcSha1(string filePath)
+        public async static Task<string> calcSha1Async(string filePath)
         {
             SHA1 sha1 = SHA1.Create();
             var fileStream = File.OpenRead(filePath);
-            byte[] hashData = sha1.ComputeHash(fileStream);
+            byte[] hashData = await sha1.ComputeHashAsync(fileStream);
             fileStream.Close();
-            StringBuilder sb = new StringBuilder();
-            foreach (byte b in hashData)
+            return await Task.Run(() =>
             {
-                sb.Append(b.ToString("x2"));
-            }
-            return sb.ToString();
+                StringBuilder sb = new StringBuilder();
+                foreach (byte b in hashData)
+                {
+                    sb.Append(b.ToString("x2"));
+                }
+                return sb.ToString();
+            });
         }
 
 

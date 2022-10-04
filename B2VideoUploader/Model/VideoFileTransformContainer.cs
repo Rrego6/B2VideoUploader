@@ -18,14 +18,16 @@ namespace B2VideoUploader.Model
         public string inputFilePath;
         public string? outputFilePath;
         public string? subtitlesFilePath;
+        public string? jsonFilePath;
         public string? totalSha1;
         public string[]? sha1Array;
 
-        public VideoFileTransformContainer(string inputFilePath, string? outputFilePath = null, string? subtitlesFilePath = null, string? totalSha1 = null, string[]? sha1Array = null)
+        public VideoFileTransformContainer(string inputFilePath, string? outputFilePath = null, string? subtitlesFilePath = null, string? jsonFilePath = null, string? totalSha1 = null, string[]? sha1Array = null)
         {
             this.inputFilePath = inputFilePath;
             this.outputFilePath = outputFilePath;
             this.subtitlesFilePath = subtitlesFilePath;
+            this.jsonFilePath = jsonFilePath;
             this.totalSha1 = totalSha1;
             this.sha1Array = sha1Array;
 
