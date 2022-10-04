@@ -98,7 +98,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1126, 673);
             this.tableLayoutPanel1.TabIndex = 3;
-            this.tableLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel1_Paint);
             // 
             // flowLayoutPanel3
             // 
@@ -133,7 +132,6 @@
             this.connection_status_string.TabIndex = 5;
             this.connection_status_string.Text = "label2";
             this.connection_status_string.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.connection_status_string.Click += new System.EventHandler(this.connection_status_string_Click);
             // 
             // label1
             // 
@@ -145,7 +143,6 @@
             this.label1.TabIndex = 4;
             this.label1.Text = "Connection Status:";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // splitContainer1
             // 
@@ -181,7 +178,6 @@
             this.listView1.TabIndex = 1;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.List;
-            this.listView1.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged_1);
             this.listView1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.listView1_KeyDown);
             // 
             // flowLayoutPanel1

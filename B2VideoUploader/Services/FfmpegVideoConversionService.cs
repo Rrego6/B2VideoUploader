@@ -173,7 +173,7 @@ namespace B2VideoUploader.Services
             {
                 await FFMpegArguments.FromFileInput(inputFilePath)
                     .OutputToFile(outputPath, false, options => options
-                        .WithArgument(new CustomArgument("-map 0:m:language:eng?"))
+                        .WithArgument(new CustomArgument("-map 0:m:language:eng"))
                         .WithArgument(new CustomArgument("-map -0:v"))
                         .WithArgument(new CustomArgument("-map -0:a"))
                         ).ProcessAsynchronously();

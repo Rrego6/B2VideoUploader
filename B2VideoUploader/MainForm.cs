@@ -236,40 +236,11 @@ namespace B2VideoUploader
 
         }
 
-        private void connectionStatusStrip_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
-        {
-
-        }
-
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void listView1_SelectedIndexChanged_1(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void edit_connection_status_btn_click(object sender, EventArgs e)
         {
             connectionSettingsValidator.EditConnectionSettingsPrompt(OnConnectionStatusUpdated);
         }
 
-        private void connection_status_string_Click(object sender, EventArgs e)
-        {
-
-        }
 
         private void listView1_KeyDown(object sender, KeyEventArgs e)
         {

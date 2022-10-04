@@ -10,7 +10,7 @@ using static System.Windows.Forms.ListViewItem;
 
 namespace B2VideoUploader.Services
 {
-    class VideoProcessorService : IOnProgressConversionEvents, IOnProgressUploadEvents
+    class VideoProcessorService
     {
         private readonly BlackBlazeUploadService b2UploadService;
         private readonly FfmpegVideoConversionService ffmpegVideoConversionService;
