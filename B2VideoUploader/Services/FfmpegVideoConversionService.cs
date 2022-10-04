@@ -36,9 +36,7 @@ namespace B2VideoUploader.Services
             this.customLogger = customLogger;
             this.config = config;
             GlobalFFOptions.Configure(new FFOptions { BinaryFolder = getFFMPegPath(), TemporaryFilesFolder = getTempVideoStoragePath() });
-
         }
-
 
         private static string getTempVideoStoragePath()
         {
@@ -53,7 +51,6 @@ namespace B2VideoUploader.Services
             var fullPath = Path.GetFullPath(config.FFMpegBinariesLocation);
             return pathIfFFMpegInPath ?? fullPath ?? throw new FileNotFoundException($"ffmpeg executable not found at: (${config.FFMpegBinariesLocation})");
         }
-
 
         public async Task<string> createCytubeJson(string inputFilePath, string videoUrl, string? subtitleUrl)
         {
@@ -120,12 +117,12 @@ namespace B2VideoUploader.Services
                 : 2160;
         }
 
-        private async Task WriteSha1File(string outputFilePath)
+        private async Task WriteSha1File(string videoOutputFilePath)
         {
             await Task.Run(async () =>
             {
-                var infoFilePath = $"{Path.GetDirectoryName(outputFilePath)}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(outputFilePath)}.sha1";
-                var sha1Array = await Util.CreateSha1Array(outputFilePath, config.UploadPartSize);
+                var infoFilePath = $"{Path.GetDirectoryName(videoOutputFilePath)}{Path.DirectorySeparatorChar}{Path.GetFileNameWithoutExtension(videoOutputFilePath)}.sha1";
+                var sha1Array = await Util.CreateSha1Array(videoOutputFilePath, config.UploadPartSize);
                 await File.WriteAllLinesAsync(infoFilePath, sha1Array);
             });
         }
@@ -179,7 +176,7 @@ namespace B2VideoUploader.Services
             {
                 await FFMpegArguments.FromFileInput(inputFilePath)
                     .OutputToFile(outputPath, false, options => options
-                        .WithArgument(new CustomArgument("-map 0:m:language:eng?"))
+                        .WithArgument(new CustomArgument("-map 0:m:language:eng"))
                         .WithArgument(new CustomArgument("-map -0:v"))
                         .WithArgument(new CustomArgument("-map -0:a"))
                         ).ProcessAsynchronously();
@@ -207,15 +204,15 @@ namespace B2VideoUploader.Services
          * Todo: use nvidia encode if available?
          * Todo: Check if video is already a webm (may not be enough as we still might want to extract subtitles)
          */
-        public async Task<VideoFileTransformContainer> convertVideoToWebFormat(VideoFileTransformContainer video)
+        public async Task<VideoFileTransformContainer> convertVideoToWebFormat(string inputFilePath)
         {
-            var fileName = video.fileName;
+            var fileInfo = new FileInfo(inputFilePath);
+            var fileName = fileInfo.Name;
             var outputPath = $"{getTempVideoStoragePath()}/{fileName}.webm";
-            var mediaAnalysis = await FFProbe.AnalyseAsync(video.inputFilePath);
+            var mediaAnalysis = await FFProbe.AnalyseAsync(inputFilePath);
             var container = mediaAnalysis.Format.FormatName;
 
-            video.outputFilePath = outputPath;
-`
+            var video = new VideoFileTransformContainer(inputFilePath, outputPath);
             customLogger.LogInformation("Check if video has already been converted and is valid.");
 
             //check if video has already been converted and file exists
@@ -228,7 +225,6 @@ namespace B2VideoUploader.Services
                     OnConversionComplete?.Invoke(this, new FileProgressEventArgs(video));
                     return video;
                 }
-
             }
 
             customLogger.LogInformation("Start converting video.");
@@ -274,7 +270,9 @@ namespace B2VideoUploader.Services
             Application.ApplicationExit += OnApplicationExit;
             await task;
             Application.ApplicationExit -= OnApplicationExit;
-            await WriteSha1File(outputPath);
+            OnConversionProgress.Invoke(this, new FileProgressEventArgs(video, "Writing Sha1"));
+            await WriteSha1File(video);
+            OnConversionComplete.Invoke(this, new FileProgressEventArgs(video, "Completed Encoding"));
             return video;
         }
     }
